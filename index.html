@@ -1,12 +1,231 @@
 <!DOCTYPE html>
-<html>
-  <head>
+<html lang="ja">
+<head>
     <meta charset="UTF-8">
-    <title>Kosen　Kakomon site</title>
-  </head>
-  <body>
-    <h1>木更津高専過去問サイト</h1>
-    <p>これは GitHub Pages で公開したページです。</p>
-　　<p>リンクの共有は可能です。</p>
-  </body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>歴史A 第8回 暗記トレーニング</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f8;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --accent-color: #4a90e2;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        header {
+            text-align: center;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        h1 {
+            font-size: 1.2rem;
+            color: #666;
+            margin: 0 0 5px 0;
+        }
+
+        .progress {
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        /* 説明文のエエリア */
+        .description-box {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            min-height: 120px;
+            background: #fdfdfd;
+            border: 1px solid #eee;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            white-space: pre-wrap;
+        }
+
+        /* 答えのエリア */
+        .answer-container {
+            border-top: 2px dashed #ddd;
+            padding-top: 20px;
+            text-align: center;
+        }
+
+        .answer-box {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #d9534f;
+            min-height: 40px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hidden {
+            visibility: hidden;
+        }
+
+        /* ボタン */
+        .btn-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .btn-show {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-show:hover {
+            background-color: #357abd;
+        }
+
+        .btn-next {
+            background-color: #5cb85c;
+            color: white;
+        }
+
+        .btn-next:hover {
+            background-color: #4cae4c;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div>
+        <header>
+            <h1>歴史A 第8回 トレーニング</h1>
+            <div class="progress" id="progress">問題 1 / 11</div>
+        </header>
+
+        <!-- 説明文 -->
+        <div class="description-box" id="description">
+            読み込み中...
+        </div>
+    </div>
+
+    <!-- 一番下の答えと操作エリア -->
+    <div class="answer-container">
+        <div class="answer-box hidden" id="answer">
+            <!-- ここに答えが表示されます -->
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-show" onclick="showAnswer()">答えを見る</button>
+            <button class="btn-next" onclick="nextQuestion()">次の問題</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // PDF資料から抽出した問題データ
+    const quizData = [
+        {
+            description: "1765年に制定され、アメリカ植民地で発行される印刷物などにイギリス政府発行の印紙を貼ることを命じて課税しようとした法令は何？",
+            answer: "印紙条例"
+        },
+        {
+            description: "1773年、インディアンに扮した人々が船の積荷である茶を海に投棄した事件は何？",
+            answer: "ボストン茶会事件"
+        },
+        {
+            description: "アメリカ13州植民地の間でイギリスと完全に分離すべきという意見が強まり、独立宣言が発表されたのは何年？",
+            answer: "1776年"
+        },
+        {
+            description: "フランスでのアメリカの立場を有利にし、参戦まで持っていった外交官（多才で電気の研究などでも有名）は誰？",
+            answer: "フランクリン"
+        },
+        {
+            description: "ロシア、スウェーデン、プロイセンなどが結成した、反英側・中立の立場を取る同盟は何？",
+            answer: "武装中立同盟"
+        },
+        {
+            description: "有能な軍人として劣勢を跳ね返し、アメリカの初代大統領となった人物は誰？",
+            answer: "ワシントン"
+        },
+        {
+            description: "1812〜1814年にかけて、イギリスの封鎖令に反発したアメリカがイギリスと行った戦争は何？",
+            answer: "米英戦争"
+        },
+        {
+            description: "1846〜1848年に行われ、勝利したアメリカがカリフォルニアを獲得した戦争は何？",
+            answer: "アメリカ=メキシコ戦争"
+        },
+        {
+            description: "アメリカの合衆国発展は神から与えられたものであるとする考え方（マニフェスト・ディスティニー）は何？",
+            answer: "明白な天命"
+        },
+        {
+            description: "1794年にホイットニーが発明・改良し、南部の綿花生産を飛躍的に効率化させた機械は何？",
+            answer: "綿繰機"
+        },
+        {
+            description: "1861年からの南北戦争で、1865年4月に北部が勝利する直前に激戦が行われた場所はどこ？",
+            answer: "ゲディスバーグ"
+        }
+    ];
+
+    let currentIndex = 0;
+
+    function loadQuestion() {
+        const currentQuiz = quizData[currentIndex];
+        document.getElementById("description").innerText = currentQuiz.description;
+        document.getElementById("answer").innerText = currentQuiz.answer;
+        document.getElementById("answer").classList.add("hidden");
+        document.getElementById("progress").innerText = `問題 ${currentIndex + 1} / ${quizData.length}`;
+    }
+
+    function showAnswer() {
+        document.getElementById("answer").classList.remove("hidden");
+    }
+
+    function nextQuestion() {
+        currentIndex = (currentIndex + 1) % quizData.length;
+        loadQuestion();
+    }
+
+    loadQuestion();
+</script>
+
+</body>
 </html>
